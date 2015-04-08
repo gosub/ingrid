@@ -1,2 +1,2 @@
 ingrid: ingrid.c
-	gcc -o ingrid -Wall -lportmidi -lportaudio -lsndfile ingrid.c
+	gcc -o ingrid -Wall -lm -lportmidi -lportaudio -lsndfile ingrid.c

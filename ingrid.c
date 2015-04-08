@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <dirent.h>
+#include <math.h>
 
 #include <portaudio.h>
 #include <portmidi.h>
@@ -289,6 +290,11 @@ void audio_fill(PAS *out, PMS *midiout, int frames, sound sounds[]) {
             }
             first_sound = FALSE;
         }
+    }
+    /* very basic limiter */
+    for(i=0;i<frames;i++) {
+        buffer[i*2] =tanh(buffer[i*2]);
+        buffer[i*2+1] =tanh(buffer[i*2+1]);
     }
     if(first_sound) memset(buffer, 0, sizeof(float) * 44100);
     Pa_WriteStream(out, buffer, frames);
