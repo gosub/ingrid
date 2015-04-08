@@ -238,23 +238,21 @@ int init_audio(PAS **out, int channels, int samplerate) {
 }
 
 
-int read_chunk(sound *s, long frames, float *b, float amp, int mix) {
-	  float temp[44100];
-	  long i;
-	  sf_seek(s->sndFile, s->position, SEEK_SET);
-	  sf_readf_float(s->sndFile, temp, frames);
-      
-	  for(i=0; i<frames; i++) {
-		if(mix) {
-		  b[i*2] += temp[i*2] * amp;
-		  b[i*2+1] += temp[i*2+1] * amp;
-		} else {
-		  b[i*2] = temp[i*2] * amp;
-		  b[i*2+1] = temp[i*2+1] * amp;
-		}
-	  }
-	  s->position += frames;
-      return (s->position >= s->sfInfo.frames);
+int read_chunk(sound *s, long frames, float *b, float amp) {
+    float temp[44100];
+    long i, sndfrms, remaining, tocopy;
+    sf_seek(s->sndFile, s->position, SEEK_SET);
+    sf_readf_float(s->sndFile, temp, frames);
+
+    sndfrms = s->sfInfo.frames;
+    remaining = sndfrms - s->position;
+    tocopy = (frames > remaining) ? remaining : frames;
+    for(i=0; i<tocopy; i++) {
+        b[i*2] += temp[i*2] * amp;
+        b[i*2+1] += temp[i*2+1] * amp;
+    }
+    s->position += frames;
+    return (s->position >= s->sfInfo.frames);
 }
 
 
@@ -274,21 +272,20 @@ void react(PMS *out, lp_event ev, sound sounds[]) {
 
 
 void audio_fill(PAS *out, PMS *midiout, int frames, sound sounds[]) {
-    int i, first_sound, finished;
+    int i, finished;
     float buffer[44100];
     int to_turn_off[64];
     
     for(i=0;i<64;i++) to_turn_off[i] = FALSE;
-    
-    first_sound = TRUE;
+    memset(buffer, 0, sizeof(float) * 44100);
+
     for (i = 0; i < 64; ++i) {
         if (sounds[i].playing && sounds[i].sndFile) {
-            finished = read_chunk(&sounds[i], frames, buffer, 0.333, !first_sound);
+            finished = read_chunk(&sounds[i], frames, buffer, 0.333);
             if (finished) {
                 sounds[i].playing = FALSE;
                 to_turn_off[i] = TRUE;
             }
-            first_sound = FALSE;
         }
     }
     /* very basic limiter */
@@ -296,7 +293,6 @@ void audio_fill(PAS *out, PMS *midiout, int frames, sound sounds[]) {
         buffer[i*2] =tanh(buffer[i*2]);
         buffer[i*2+1] =tanh(buffer[i*2+1]);
     }
-    if(first_sound) memset(buffer, 0, sizeof(float) * 44100);
     Pa_WriteStream(out, buffer, frames);
 
     for (i = 0; i < 64; ++i) {
