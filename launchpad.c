@@ -126,7 +126,7 @@ int init_launchpad(launchpad *lp) {
             return FALSE;
         }
      } else {
-        printf("error: could not find launchpad midi device\n");
+        printf("error: could not find any launchpad midi device\n");
         return FALSE;
     }
 }
