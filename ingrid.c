@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <dirent.h>
 #include <math.h>
@@ -43,29 +44,26 @@ int load_wav(sound* s, char* filename) {
 
 
 int load_sounds(sound sounds[]) {
-    int loaded = 0;
-    DIR *dirp;
-    struct dirent *dp;
+    int loaded = 0, n, i;
+    struct dirent **namelist;
     char filename[300];
     
-    dirp = opendir("samples");
-    if (dirp == NULL)
+    n = scandir("samples", &namelist, NULL, alphasort);
+    if (n < 0) {
         return (ERROR);
-    while (((dp = readdir(dirp)) != NULL) && loaded<64) {
-        if (strstr(dp->d_name, ".wav")) {
-            strcpy(filename, "samples");
-            strcat(filename, "/");
-            strcat(filename, dp->d_name);
-            printf("found sample: %s\n", filename);
-            if(load_wav(&sounds[loaded], filename)) 
-                loaded += 1;
-        }
     }
-    (void)closedir(dirp);
+    for (i = 0; i < n && loaded < 64; ++i) {
+        if (strstr(namelist[i]->d_name, ".wav")) {
+            sprintf(filename, "samples/%s", namelist[i]->d_name);
+            if (load_wav(&sounds[loaded], filename)) {
+                loaded += 1;
+            }
+        }
+        free(namelist[i]);
+    }
+    free(namelist);
     return loaded;
 }
-
-
 
 
 int init_audio(PAS **out, int channels, int samplerate) {
