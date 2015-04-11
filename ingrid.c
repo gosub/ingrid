@@ -34,7 +34,7 @@ int load_wav(sound* s, char* filename) {
   /* try to open the file */
   s->sndFile = sf_open(filename, SFM_READ, &s->sfInfo);
   if(!s->sndFile) {
-	  printf("error opening file\n");
+	  printf("error opening file: %s\n", filename);
 	  return FALSE;
   } else {
 	return TRUE;
