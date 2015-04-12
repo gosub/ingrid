@@ -14,9 +14,6 @@
 #define CC      0xB0
 #define CHAN(x) ((x)-1)
 
-/* PortMidi abbreviations */
-#define PMS PortMidiStream
-
 /* midi buffer size */
 #define BUFFSIZE 64
 
