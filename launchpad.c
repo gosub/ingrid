@@ -111,6 +111,20 @@ void lp_led(launchpad *lp, int x, int y, BYTE red, BYTE green) {
 }
 
 
+void lp_side_col(launchpad *lp, int y, BYTE red, BYTE green) {
+    Pm_WriteShort(lp->out, 0, Pm_Message(NOTEON | CHAN(1),
+                                         lp_side_col_layout[y],
+                                         COLOR(red, green)));
+}
+
+
+void lp_top_row(launchpad *lp, int x, BYTE red, BYTE green) {
+    Pm_WriteShort(lp->out, 0, Pm_Message(CC | CHAN(1),
+                                         lp_top_row_layout[x],
+                                         COLOR(red, green)));
+}
+
+
 int init_launchpad(launchpad *lp) {
     int indev, outdev;
     PmError err_in, err_out;
