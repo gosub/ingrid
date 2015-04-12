@@ -1,3 +1,5 @@
 samples/
 ingrid
 *.o
+*.c~
+*,h~

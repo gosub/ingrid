@@ -23,4 +23,4 @@ indent:
 	$(INDENT) $(INDENT_OPTS) -Tsound -Tlaunchpad -Tlp_event -Tsb_state ingrid.c launchpad.c soundboard.c
 
 clean:
-	rm ingrid *.o
+	rm ingrid *.o *.c~ *.h~
