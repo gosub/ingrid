@@ -4,14 +4,17 @@ INCLUDES = -lportaudio -lportmidi -lsndfile -lm
 
 .PHONY: clean
 
-ingrid: ingrid.o launchpad.o
-	$(CC) -o ingrid $(INCLUDES) ingrid.o launchpad.o
+ingrid: ingrid.o launchpad.o soundboard.o
+	$(CC) -o ingrid $(INCLUDES) ingrid.o launchpad.o soundboard.o
 
-ingrid.o: ingrid.c launchpad.h
-	gcc -c ingrid.c $(CFLAGS)
+ingrid.o: constants.h launchpad.h soundboard.h ingrid.c
+	$(CC) -c ingrid.c $(CFLAGS)
 
-launchpad.o: launchpad.c launchpad.h
-	gcc -c launchpad.c  $(CFLAGS)
+launchpad.o: constants.h launchpad.h launchpad.c
+	$(CC) -c launchpad.c  $(CFLAGS)
+
+soundboard.o: constants.h launchpad.h soundboard.h soundboard.c
+	$(CC) -c soundboard.c  $(CFLAGS)
 
 clean:
 	rm ingrid *.o 

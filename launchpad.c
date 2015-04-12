@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <portmidi.h>
+
+#include "constants.h"
 #include "launchpad.h"
 
 
@@ -40,24 +42,28 @@ int find_index(int a[], int num_elements, int value)
     for (i=0; i<num_elements; i++) {
         if (a[i] == value) return(i);
     }
-    return(-1);
+    return (NOTFOUND);
 }
+
 
 void find_launchpad(int *inputdev, int *outputdev) {
     const PmDeviceInfo* devinfo;
     int i;
-    
-    *inputdev = -1;
-    *outputdev = -1;
+
+    *inputdev = NOTFOUND;
+    *outputdev = NOTFOUND;
 
     for (i = 0; i < Pm_CountDevices(); ++i) {
         devinfo = Pm_GetDeviceInfo(i);
         if (strstr(devinfo->name, "Launchpad")) {
-            if(devinfo->input && *inputdev == -1) *inputdev = i;
-            if(devinfo->output && *outputdev == -1) *outputdev = i;
+            if (devinfo->input && *inputdev == NOTFOUND)
+                *inputdev = i;
+            if (devinfo->output && *outputdev == NOTFOUND)
+                *outputdev = i;
         }
     }
 }
+
 
 int lp_midi_interpret(PmMessage msg, lp_event *ev) {
     int status, d1, d2, idx;
@@ -67,7 +73,7 @@ int lp_midi_interpret(PmMessage msg, lp_event *ev) {
     
     if (status == (NOTEON|CHAN(1))) {
         idx = find_index(lp_grid_layout, 64, d1);
-        if (idx != -1) {
+        if (idx != NOTFOUND) {
             ev->zone = GRID;
             ev->x = IDX2X(idx);
             ev->y = IDX2Y(idx);
@@ -75,7 +81,7 @@ int lp_midi_interpret(PmMessage msg, lp_event *ev) {
             return TRUE;
         }
         idx = find_index(lp_side_col_layout, 8, d1);
-        if (idx != -1) {
+        if (idx != NOTFOUND) {
             ev->zone = SIDE_COL;
             ev->x = 0;
             ev->y = idx;
@@ -83,10 +89,9 @@ int lp_midi_interpret(PmMessage msg, lp_event *ev) {
             return TRUE;
         }
     }
-    
     if (status == (CC|CHAN(1))) {
         idx = find_index(lp_top_row_layout, 8, d1);
-        if (idx != -1) {
+        if (idx != NOTFOUND) {
             ev->zone = TOP_ROW;
             ev->x = idx;
             ev->y = 0;
@@ -114,9 +119,10 @@ int init_launchpad(launchpad *lp) {
     PmError err_in, err_out;
     Pm_Initialize();
     find_launchpad(&indev, &outdev);
-    if (indev != -1 && outdev != -1) {
-        err_in  = Pm_OpenInput(&(lp->in), indev, NULL, BUFFSIZE, NULL, 0);
-        err_out = Pm_OpenOutput(&(lp->out), outdev, NULL, BUFFSIZE, NULL, NULL, 0);
+    if (indev != NOTFOUND && outdev != NOTFOUND) {
+        err_in = Pm_OpenInput(&(lp->in), indev, NULL, BUFFSIZE, NULL, 0);
+        err_out =
+            Pm_OpenOutput(&(lp->out), outdev, NULL, BUFFSIZE, NULL, NULL, 0);
         if (err_in == pmNoError && err_out == pmNoError) {
             return TRUE;
         } else {

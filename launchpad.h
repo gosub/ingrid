@@ -1,4 +1,3 @@
-typedef unsigned char BYTE;
 
 #define XY2IDX(x,y) (((y)*8)+(x))
 #define IDX2X(i) ((i)%8)
