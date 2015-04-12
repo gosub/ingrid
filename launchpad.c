@@ -135,6 +135,7 @@ int init_launchpad(launchpad *lp) {
         err_out =
             Pm_OpenOutput(&(lp->out), outdev, NULL, BUFFSIZE, NULL, NULL, 0);
         if (err_in == pmNoError && err_out == pmNoError) {
+            lp_clear(lp);
             return TRUE;
         } else {
             printf("error: %s\n%s\n", 
