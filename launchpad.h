@@ -1,3 +1,5 @@
+#ifndef LAUNCHPAD_H_
+#define LAUNCHPAD_H_
 
 #define XY2IDX(x,y) (((y)*8)+(x))
 #define IDX2X(i) ((i)%8)
@@ -23,3 +25,4 @@ void close_launchpad(launchpad *lp);
 void lp_led(launchpad *lp, int x, int y, BYTE red, BYTE green);
 void lp_clear(launchpad *lp);
 int lp_get_next_event(launchpad *lp, lp_event *event);
+#endif /* LAUNCHPAD_H_ */
