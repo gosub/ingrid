@@ -6,7 +6,7 @@
 #define IDX2Y(i) ((i)/8)
 
 typedef enum {GRID, TOP_ROW, SIDE_COL} lp_ev_zone;
-typedef enum {PRESS, RELEASE } lp_ev_type;
+typedef enum {PRESS, RELEASE} lp_ev_type;
 
 typedef struct {
     lp_ev_zone zone;
@@ -27,4 +27,5 @@ void lp_side_col(launchpad *lp, int y, BYTE red, BYTE green);
 void lp_top_row(launchpad *lp, int x, BYTE red, BYTE green);
 void lp_clear(launchpad *lp);
 int lp_get_next_event(launchpad *lp, lp_event *event);
+
 #endif /* LAUNCHPAD_H_ */

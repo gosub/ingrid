@@ -90,8 +90,8 @@ int main(void) {
             }
         }
         Pa_StopStream(audio_out);
+        Pa_Terminate();
+        close_launchpad(&lp);
     }
-    Pa_Terminate();
-    close_launchpad(&lp);
     return ERROR;
 }
